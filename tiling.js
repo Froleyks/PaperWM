@@ -5171,7 +5171,7 @@ export function equalizeWindowWidths(_metaWindow, space) {
     const workArea = space.workArea();
     const gap = Settings.prefs.window_gap;
     const margin = Settings.prefs.horizontal_margin;
-    const min = workArea.x;
+    const viewportMinX = workArea.x;
 
     // Collect columns whose representative window is more than 50% visible
     const visibleColumns = [];
@@ -5183,8 +5183,8 @@ export function equalizeWindowWidths(_metaWindow, space) {
         const clone = mw.clone;
         const x = space.visibleX(mw);
 
-        const overlapLeft = Math.max(x, min);
-        const overlapRight = Math.min(x + clone.width, min + workArea.width);
+        const overlapLeft = Math.max(x, viewportMinX);
+        const overlapRight = Math.min(x + clone.width, viewportMinX + workArea.width);
         const overlap = Math.max(0, overlapRight - overlapLeft);
 
         if (overlap > clone.width * 0.5) {
@@ -5192,11 +5192,11 @@ export function equalizeWindowWidths(_metaWindow, space) {
         }
     }
 
-    if (visibleColumns.length === 0) return;
+    const n = visibleColumns.length;
+    if (n === 0) return;
 
     const targetWidth = Math.floor(
-        (workArea.width - margin * 2 - (visibleColumns.length - 1) * gap) /
-        visibleColumns.length
+        (workArea.width - margin * 2 - (n - 1) * gap) / n
     );
 
     visibleColumns.forEach(column => {
