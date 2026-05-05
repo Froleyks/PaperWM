@@ -335,6 +335,9 @@ export function setupActions(settings) {
         Tiling.toggleMaximizeHorizontally,
         Meta.KeyBindingFlags.PER_WINDOW);
 
+    registerPaperAction('equalize-windows-width',
+        Tiling.equalizeWindowWidths);
+
     registerPaperAction('paper-toggle-fullscreen',
         metaWindow => {
             if (metaWindow.fullscreen) {

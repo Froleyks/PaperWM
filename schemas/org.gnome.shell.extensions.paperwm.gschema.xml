@@ -435,6 +435,11 @@
       <summary>Maximize the width of the active window</summary>
     </key>
 
+    <key type="as" name="equalize-windows-width">
+      <default><![CDATA[[]]]></default>
+      <summary>Equalize the widths of all currently visible windows</summary>
+    </key>
+
     <key type="as" name="paper-toggle-fullscreen">
       <default><![CDATA[['<Super><shift>f']]]></default>
       <summary>Toggle fullscreen</summary>
