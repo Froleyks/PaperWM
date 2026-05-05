@@ -5161,6 +5161,55 @@ export function switchToNextFocusMode(space) {
 }
 
 /**
+ * Finds all columns that are currently more than 50% visible in the viewport
+ * and resizes their windows to an equal width so they together fill the screen.
+ * @param {Meta.Window} _metaWindow - unused, provided by keybinding machinery
+ * @param {Space} space
+ */
+export function equalizeWindowWidths(_metaWindow, space) {
+    space = space ?? spaces.activeSpace;
+    const workArea = space.workArea();
+    const gap = Settings.prefs.window_gap;
+    const margin = Settings.prefs.horizontal_margin;
+    const viewportMinX = workArea.x;
+
+    // Collect columns whose representative window is more than 50% visible
+    const visibleColumns = [];
+    for (let i = 0; i < space.length; i++) {
+        const column = space[i];
+        if (column.length === 0) continue;
+
+        const mw = column[0];
+        const clone = mw.clone;
+        const x = space.visibleX(mw);
+
+        const overlapLeft = Math.max(x, viewportMinX);
+        const overlapRight = Math.min(x + clone.width, viewportMinX + workArea.width);
+        const overlap = Math.max(0, overlapRight - overlapLeft);
+
+        if (overlap > clone.width * 0.5) {
+            visibleColumns.push(column);
+        }
+    }
+
+    const n = visibleColumns.length;
+    if (n === 0) return;
+
+    const targetWidth = Math.floor(
+        (workArea.width - margin * 2 - (n - 1) * gap) / n
+    );
+
+    visibleColumns.forEach(column => {
+        column.forEach(mw => {
+            if (!mw.fullscreen && !isMaximized(mw)) {
+                const frame = mw.get_frame_rect();
+                mw.move_resize_frame(true, frame.x, frame.y, targetWidth, frame.height);
+            }
+        });
+    });
+}
+
+/**
  * "Fit" values such that they sum to `targetSum`
  */
 export function fitProportionally(values, targetSum) {
